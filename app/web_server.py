@@ -43,7 +43,15 @@ def debug_version():
 
 @app.get("/")
 def read_root():
-    """Serves the main dashboard page."""
+    """Serves the main dashboard page. Resets sandbox state on refresh."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sandbox_path = os.path.join(base_dir, "architecture_sandbox.html")
+    if os.path.exists(sandbox_path):
+        try:
+            os.remove(sandbox_path)
+        except Exception:
+            pass
+            
     index_path = os.path.join(static_dir, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)

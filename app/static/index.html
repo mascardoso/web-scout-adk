@@ -665,6 +665,19 @@
                 return;
             }
 
+            // Extract clean domain from input (removes http://, https://, www., paths, query params)
+            let cleanDomain = urlInput.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0].split('?')[0].split('#')[0];
+            
+            // Simple validation: must have at least one dot separating subdomains/TLD
+            const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
+            if (!domainRegex.test(cleanDomain)) {
+                alert("Please enter a valid domain name (e.g. clickup.com or google.com).");
+                return;
+            }
+
+            // Update the input field with the sanitized domain
+            document.getElementById("target-url").value = cleanDomain;
+
             // UI Loading state
             btnScan.disabled = true;
             loadingScreen.style.display = "flex";
@@ -799,6 +812,13 @@
             // Trigger canvas redraw after animation completes
             setTimeout(refreshCanvas, 360);
         }
+
+        // Trigger scan when pressing Enter inside the input field
+        document.getElementById("target-url").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                triggerScan();
+            }
+        });
     </script>
 </body>
 </html>
