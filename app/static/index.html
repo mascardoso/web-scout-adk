@@ -111,6 +111,7 @@
             grid-template-columns: 360px 1fr;
             flex-grow: 1;
             height: calc(100vh - 81px);
+            transition: grid-template-columns 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Sidebar Console Control Panel */
@@ -120,9 +121,11 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            overflow-y: auto;
+            overflow: hidden;
+            min-width: 0;
             backdrop-filter: blur(8px);
             background: rgba(17, 24, 39, 0.4);
+            transition: all 0.35s ease;
         }
 
         .panel-title {
@@ -342,16 +345,19 @@
             display: grid;
             grid-template-columns: 420px 1fr;
             height: 100%;
+            transition: grid-template-columns 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .critique-section {
             border-right: 1px solid var(--border-color);
             padding: 2rem;
-            overflow-y: auto;
+            overflow: hidden;
+            min-width: 0;
             background: rgba(17, 24, 39, 0.2);
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            transition: all 0.35s ease;
         }
 
         .markdown-body h3, .markdown-body h4 {
@@ -432,6 +438,12 @@
 
         .btn-action:hover {
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-action.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: var(--primary);
+            color: #38BDF8;
         }
 
         .canvas-iframe {
@@ -590,6 +602,12 @@
                         Interactive Architecture Sandbox
                     </div>
                     <div class="canvas-actions">
+                        <button class="btn-action" id="toggle-console-btn" onclick="toggleConsole()">
+                            <i class="fa-solid fa-sliders"></i> <span id="toggle-console-lbl">Hide Console</span>
+                        </button>
+                        <button class="btn-action" id="toggle-critique-btn" onclick="toggleCritique()">
+                            <i class="fa-solid fa-chart-simple"></i> <span id="toggle-critique-lbl">Hide Audit</span>
+                        </button>
                         <button class="btn-action" onclick="refreshCanvas()">
                             <i class="fa-solid fa-arrows-rotate"></i> Refresh Canvas
                         </button>
@@ -720,6 +738,57 @@
                 btnScan.disabled = false;
                 loadingScreen.style.display = "none";
             }
+        }
+
+        let consoleVisible = true;
+        let critiqueVisible = true;
+
+        function toggleConsole() {
+            consoleVisible = !consoleVisible;
+            const mainElement = document.querySelector('main');
+            const consolePanel = document.querySelector('.console-panel');
+            const btn = document.getElementById('toggle-console-btn');
+            const lbl = document.getElementById('toggle-console-lbl');
+
+            if (consoleVisible) {
+                mainElement.style.gridTemplateColumns = '360px 1fr';
+                consolePanel.style.padding = '1.5rem';
+                consolePanel.style.borderRight = '1px solid var(--border-color)';
+                lbl.innerText = 'Hide Console';
+                btn.classList.remove('active');
+            } else {
+                mainElement.style.gridTemplateColumns = '0px 1fr';
+                consolePanel.style.padding = '0';
+                consolePanel.style.borderRight = 'none';
+                lbl.innerText = 'Show Console';
+                btn.classList.add('active');
+            }
+            // Trigger canvas redraw after animation completes
+            setTimeout(refreshCanvas, 360);
+        }
+
+        function toggleCritique() {
+            critiqueVisible = !critiqueVisible;
+            const workspace = document.querySelector('.workspace');
+            const critiqueSection = document.querySelector('.critique-section');
+            const btn = document.getElementById('toggle-critique-btn');
+            const lbl = document.getElementById('toggle-critique-lbl');
+
+            if (critiqueVisible) {
+                workspace.style.gridTemplateColumns = '420px 1fr';
+                critiqueSection.style.padding = '2rem';
+                critiqueSection.style.borderRight = '1px solid var(--border-color)';
+                lbl.innerText = 'Hide Audit';
+                btn.classList.remove('active');
+            } else {
+                workspace.style.gridTemplateColumns = '0px 1fr';
+                critiqueSection.style.padding = '0';
+                critiqueSection.style.borderRight = 'none';
+                lbl.innerText = 'Show Audit';
+                btn.classList.add('active');
+            }
+            // Trigger canvas redraw after animation completes
+            setTimeout(refreshCanvas, 360);
         }
     </script>
 </body>
