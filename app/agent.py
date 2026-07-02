@@ -862,7 +862,8 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
 </html>"""
 
     # Ensure output directory for the active session scratch exists
-    file_path = "/Users/marcocardoso/DEV/web-scout-adk/architecture_sandbox.html"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path = os.path.join(base_dir, "architecture_sandbox.html")
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 

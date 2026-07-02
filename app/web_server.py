@@ -34,7 +34,8 @@ def read_root():
 @app.get("/sandbox")
 def get_sandbox():
     """Serves the generated architecture sandbox HTML directly over HTTP to bypass iframe file protocol restrictions."""
-    sandbox_path = "/Users/marcocardoso/DEV/web-scout-adk/architecture_sandbox.html"
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sandbox_path = os.path.join(base_dir, "architecture_sandbox.html")
     if os.path.exists(sandbox_path):
         # We return it with cache disabled so the iframe always reloads fresh scans
         return FileResponse(
