@@ -122,10 +122,8 @@ class SignatureRepository:
                         detected_services.append(name)
                         
         return {
-            "views": {
-                "cms": cms,
-                "detected_sdks": detected_sdks,
-                "detected_techs": detected_techs,
-                "detected_services": detected_services
-            }
+            "cms": cms,
+            "detected_sdks": detected_sdks,
+            "detected_techs": detected_techs,
+            "detected_services": detected_services
         }
