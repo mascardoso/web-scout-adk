@@ -420,7 +420,7 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .glassmorphism {{
-      background: rgba(30, 41, 59, 0.7);
+      background: rgba(30, 41, 55, 0.7);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -855,42 +855,49 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
       }});
     }}
 
-    window.addEventListener('resize', drawLines);
-    setTimeout(drawLines, 100);
+    window.fitViewport = function() {{
+      const nodeUser = document.getElementById('node-user');
+      if (nodeUser) {{ nodeUser.style.left = '10%'; nodeUser.style.top = '35%'; }}
+      
+      const nodeThird = document.getElementById('node-thirdparty');
+      if (nodeThird) {{ nodeThird.style.left = '10%'; nodeThird.style.top = '70%'; }}
+
+      const nodeWeb = document.getElementById('node-web');
+      if (nodeWeb) {{ nodeWeb.style.left = '45%'; nodeWeb.style.top = '15%'; }}
+
+      const nodeApp = document.getElementById('node-app');
+      if (nodeApp) {{ nodeApp.style.left = '45%'; nodeApp.style.top = '52%'; }}
+
+      const nodeDb = document.getElementById('node-db');
+      if (nodeDb) {{
+        const isMicro = document.getElementById('node-service-0') !== null;
+        if (isMicro) {{
+          nodeDb.style.left = '45%';
+          nodeDb.style.top = '82%';
+        }} else {{
+          nodeDb.style.left = '78%';
+          nodeDb.style.top = '35%';
+        }}
+      }}
+
+      let idx = 0;
+      while (true) {{
+        const svc = document.getElementById('node-service-' + idx);
+        if (!svc) break;
+        svc.style.left = '78%';
+        svc.style.top = (15 + idx * 22) + '%';
+        idx++;
+      }}
+
+      drawLines();
+    }};
+
+    window.addEventListener('resize', () => {{
+      window.fitViewport();
+    }});
+    
+    // Initial refit
+    setTimeout(window.fitViewport, 150);
   </script>
 </body>
-</html>"""
-
-    # Ensure output directory for the active session scratch exists
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    file_path = os.path.join(base_dir, "architecture_sandbox.html")
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
-
-    return {
-        "status": "success",
-        "file_path": file_path,
-        "url": f"file://{file_path}"
-    }
-
-
-root_agent = Agent(
-    name="root_agent",
-    model=Gemini(
-        model="gemini-2.5-pro",
-        retry_options=types.HttpRetryOptions(attempts=3),
-    ),
-    instruction="""You are the Web Scout Agent. Your goal is to analyze target websites and map their architectures.
-    When the user requests to analyze a website, follow these exact steps:
-    1. First, call the tool `scrape_website` to extract basic website signatures (CMS, IP, web server, detected_sdks, detected_techs, detected_services).
-    2. Then, call `get_hosting_details` passing the resolved IP address to get geographic and provider details.
-    3. Then, call `get_performance_metrics` passing the URL to fetch Web Vitals (TTFB, LCP, page sizes).
-    4. Then, call the tool `create_sandbox` passing the URL, IP, server_header, cms, db_type, detected_sdks, hosting_info, perf_metrics, detected_techs, and detected_services to generate the interactive system design dashboard HTML.
-    5. Finally, explain the results to the user. Always include a clickable local file link to the generated dashboard file, and provide a clean, visually simple critique of their infrastructure suitable for a frontend engineer.""",
-    tools=[scrape_website, get_hosting_details, get_performance_metrics, create_sandbox],
-)
-
-app = App(
-    root_agent=root_agent,
-    name="app",
-)
+</html>

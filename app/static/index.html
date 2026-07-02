@@ -351,8 +351,9 @@
         .critique-section {
             border-right: 1px solid var(--border-color);
             padding: 2rem;
-            overflow: hidden;
+            overflow-y: auto;
             min-width: 0;
+            min-height: 0;
             background: rgba(17, 24, 39, 0.2);
             display: flex;
             flex-direction: column;
@@ -754,12 +755,14 @@
                 mainElement.style.gridTemplateColumns = '360px 1fr';
                 consolePanel.style.padding = '1.5rem';
                 consolePanel.style.borderRight = '1px solid var(--border-color)';
+                consolePanel.style.overflowY = 'auto';
                 lbl.innerText = 'Hide Console';
                 btn.classList.remove('active');
             } else {
                 mainElement.style.gridTemplateColumns = '0px 1fr';
                 consolePanel.style.padding = '0';
                 consolePanel.style.borderRight = 'none';
+                consolePanel.style.overflowY = 'hidden';
                 lbl.innerText = 'Show Console';
                 btn.classList.add('active');
             }
@@ -778,12 +781,14 @@
                 workspace.style.gridTemplateColumns = '420px 1fr';
                 critiqueSection.style.padding = '2rem';
                 critiqueSection.style.borderRight = '1px solid var(--border-color)';
+                critiqueSection.style.overflowY = 'auto';
                 lbl.innerText = 'Hide Audit';
                 btn.classList.remove('active');
             } else {
                 workspace.style.gridTemplateColumns = '0px 1fr';
                 critiqueSection.style.padding = '0';
                 critiqueSection.style.borderRight = 'none';
+                critiqueSection.style.overflowY = 'hidden';
                 lbl.innerText = 'Show Audit';
                 btn.classList.add('active');
             }
