@@ -420,7 +420,7 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .glassmorphism {{
-      background: rgba(30, 41, 55, 0.7);
+      background: rgba(30, 41, 59, 0.7);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -429,7 +429,6 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
       touch-action: none;
       user-select: none;
       cursor: grab;
-      position: absolute;
     }}
     .node-card:active {{
       cursor: grabbing;
@@ -469,7 +468,7 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
     </div>
   </header>
 
-  <!-- Canvas & Sidebar -->
+  <!-- Main Canvas & Sidebar -->
   <div class="flex-1 flex overflow-hidden relative">
     <svg id="connection-canvas" class="absolute inset-0 pointer-events-none z-10 w-full h-full"></svg>
 
@@ -622,7 +621,7 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
         <p id="inspect-desc" class="text-sm text-slate-300 leading-relaxed"></p>
       </div>
       
-      <!-- Dynamic Metrics Panel -->
+      <!-- Dynamic Metrics/Details Panel -->
       <div id="inspect-dynamic-container" class="flex flex-col gap-4 mt-2"></div>
     </aside>
   </div>
@@ -664,7 +663,7 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
       document.getElementById('inspect-title').innerText = node.title;
       document.getElementById('inspect-desc').innerText = node.desc;
       
-      // Render classification badge dynamically
+      // Render classification-appropriate badge dynamically
       const badgeEl = document.getElementById('inspect-badge-container');
       let badgeStyle = 'bg-slate-800/20 text-slate-400 border-slate-700/30';
       if (node.type === 'Client') badgeStyle = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
@@ -900,4 +899,38 @@ def create_sandbox(url: str, ip: str, server_header: str, cms: str, db_type: str
     setTimeout(window.fitViewport, 150);
   </script>
 </body>
-</html>
+</html>"""
+
+    # Ensure output directory for the active session scratch exists
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    file_path = os.path.join(base_dir, "architecture_sandbox.html")
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    return {
+        "status": "success",
+        "file_path": file_path,
+        "url": f"file://{file_path}"
+    }
+
+
+root_agent = Agent(
+    name="root_agent",
+    model=Gemini(
+        model="gemini-2.5-pro",
+        retry_options=types.HttpRetryOptions(attempts=3),
+    ),
+    instruction="""You are the Web Scout Agent. Your goal is to analyze target websites and map their architectures.
+    When the user requests to analyze a website, follow these exact steps:
+    1. First, call the tool `scrape_website` to extract basic website signatures (CMS, IP, web server, detected_sdks, detected_techs, detected_services).
+    2. Then, call `get_hosting_details` passing the resolved IP address to get geographic and provider details.
+    3. Then, call `get_performance_metrics` passing the URL to fetch Web Vitals (TTFB, LCP, page sizes).
+    4. Then, call the tool `create_sandbox` passing the URL, IP, server_header, cms, db_type, detected_sdks, hosting_info, perf_metrics, detected_techs, and detected_services to generate the interactive system design dashboard HTML.
+    5. Finally, explain the results to the user. Always include a clickable local file link to the generated dashboard file, and provide a clean, visually simple critique of their infrastructure suitable for a frontend engineer.""",
+    tools=[scrape_website, get_hosting_details, get_performance_metrics, create_sandbox],
+)
+
+app = App(
+    root_agent=root_agent,
+    name="app",
+)
