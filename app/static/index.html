@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Marked.js Markdown Parser -->
@@ -42,7 +45,7 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
         }
@@ -101,9 +104,20 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
         }
 
         main {
@@ -289,9 +303,17 @@
             border-radius: 50%;
         }
 
-        .dot-red { background-color: #FF5F56; }
-        .dot-yellow { background-color: #FFBD2E; }
-        .dot-green { background-color: #27C93F; }
+        .dot-red {
+            background-color: #FF5F56;
+        }
+
+        .dot-yellow {
+            background-color: #FFBD2E;
+        }
+
+        .dot-green {
+            background-color: #27C93F;
+        }
 
         .terminal-body {
             overflow-y: auto;
@@ -307,9 +329,17 @@
             word-break: break-all;
         }
 
-        .log-line.success { color: var(--accent-green); }
-        .log-line.error { color: var(--accent-red); }
-        .log-line.info { color: var(--text-muted); }
+        .log-line.success {
+            color: var(--accent-green);
+        }
+
+        .log-line.error {
+            color: var(--accent-red);
+        }
+
+        .log-line.info {
+            color: var(--text-muted);
+        }
 
         /* Stats Panel */
         .stats-grid {
@@ -336,7 +366,6 @@
 
         .stat-value {
             font-size: 0.95rem;
-            font-weight: 600;
             color: var(--text-main);
             word-break: break-all;
         }
@@ -363,7 +392,8 @@
             transition: all 0.35s ease;
         }
 
-        .markdown-body h3, .markdown-body h4 {
+        .markdown-body h3,
+        .markdown-body h4 {
             color: var(--primary);
             margin-top: 1.5rem;
             margin-bottom: 0.5rem;
@@ -487,8 +517,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .pulse-text {
@@ -498,11 +533,19 @@
         }
 
         @keyframes pulse-opacity {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="logo">
@@ -528,7 +571,8 @@
 
             <div class="input-group">
                 <label>Cognitive AI Engine</label>
-                <div style="background: rgba(31, 41, 55, 0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; color: #38BDF8;">
+                <div
+                    style="background: rgba(31, 41, 55, 0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; color: #38BDF8;">
                     <i class="fa-solid fa-brain"></i>
                     <span>Groq / Llama 3.3 (Active)</span>
                 </div>
@@ -596,7 +640,8 @@
                     <i class="fa-solid fa-clipboard-check"></i> System Architecture Audit
                 </div>
                 <div class="markdown-body" id="critique-container">
-                    <p style="color: var(--text-muted);">Launch a scout scan on a target domain to generate a systems critique report...</p>
+                    <p style="color: var(--text-muted);">Launch a scout scan on a target domain to generate a systems
+                        critique report...</p>
                 </div>
             </div>
 
@@ -616,7 +661,8 @@
                         <button class="btn-action" onclick="refreshCanvas()">
                             <i class="fa-solid fa-arrows-rotate"></i> Refresh Canvas
                         </button>
-                        <a id="btn-popout" href="/sandbox" target="_blank" class="btn-action" style="text-decoration:none;">
+                        <a id="btn-popout" href="/sandbox" target="_blank" class="btn-action"
+                            style="text-decoration:none;">
                             <i class="fa-solid fa-expand"></i> Popout Canvas
                         </a>
                     </div>
@@ -640,7 +686,7 @@
             const container = document.getElementById("terminal-logs");
             const line = document.createElement("div");
             line.className = `log-line ${type}`;
-            
+
             const timestamp = new Date().toLocaleTimeString();
             line.innerHTML = `[${timestamp}] ${text}`;
             container.appendChild(line);
@@ -659,7 +705,7 @@
             const btnScan = document.getElementById("btn-scan");
             const loadingScreen = document.getElementById("loading-screen");
             const loadingMessage = document.getElementById("loading-message");
-            
+
             if (!urlInput) {
                 alert("Please enter a target URL.");
                 return;
@@ -667,7 +713,7 @@
 
             // Extract clean domain from input (removes http://, https://, www., paths, query params)
             let cleanDomain = urlInput.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "").split('/')[0].split('?')[0].split('#')[0];
-            
+
             // Simple validation: must have at least one dot separating subdomains/TLD
             const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
             if (!domainRegex.test(cleanDomain)) {
@@ -682,10 +728,10 @@
             btnScan.disabled = true;
             loadingScreen.style.display = "flex";
             document.getElementById("terminal-logs").innerHTML = ""; // Clear logs
-            
+
             addLog(`Initializing scan agent on: <strong>${urlInput}</strong>`, "info");
             addLog(`Using AI cognitive engine: <strong>${engineSelect.toUpperCase()}</strong>`, "info");
-            
+
             // Phase 1 logs
             loadingMessage.innerText = `Crawling ${urlInput} network records...`;
             addLog(`Scraper thread spawned...`, "info");
@@ -724,21 +770,21 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     if (data.status === "success") {
                         addLog(`Web Scout compilation completed successfully!`, "success");
-                        
+
                         // Populate quick metrics
                         document.getElementById("stat-cms").innerText = data.details.cms;
                         document.getElementById("stat-server").innerText = data.details.server;
                         document.getElementById("stat-hosting").innerText = data.details.hosting;
                         document.getElementById("stat-lcp").innerText = data.details.page_size;
                         document.getElementById("stat-ttfb").innerText = data.details.ttfb;
-                        
+
                         // Render Markdown critique
                         document.getElementById("critique-container").innerHTML = marked.parse(data.critique);
-                        
+
                         // Reload dynamic canvas sandbox
                         refreshCanvas();
                     } else if (data.status === "rate_limited") {
@@ -821,4 +867,5 @@
         });
     </script>
 </body>
+
 </html>
