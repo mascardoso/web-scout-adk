@@ -46,7 +46,60 @@ def get_sandbox():
             }
         )
     # Default placeholder if no scan has run yet
-    return HTMLResponse("<h3>No sandbox has been compiled yet. Run a scan from the control panel!</h3>")
+    placeholder_html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    body {
+      background-color: #0D111A;
+      color: #9CA3AF;
+      font-family: 'Outfit', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .placeholder-card {
+      text-align: center;
+      max-width: 320px;
+      padding: 2rem;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      background: rgba(17, 24, 39, 0.3);
+    }
+    .placeholder-icon {
+      font-size: 2.5rem;
+      color: #6366F1;
+      margin-bottom: 1rem;
+      opacity: 0.65;
+    }
+    .placeholder-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #F3F4F6;
+      margin-bottom: 0.5rem;
+    }
+    .placeholder-text {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="placeholder-card">
+    <div class="placeholder-icon">
+      <i class="fa-solid fa-diagram-project"></i>
+    </div>
+    <div class="placeholder-title">No Sandbox Compiled Yet</div>
+    <div class="placeholder-text">Enter a target domain in the control console and launch the Web Scout scanner to build your interactive system design canvas.</div>
+  </div>
+</body>
+</html>"""
+    return HTMLResponse(placeholder_html)
 
 @app.post("/api/scan")
 def run_scan(request: ScanRequest):
