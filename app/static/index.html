@@ -505,18 +505,17 @@
                 <label for="target-url">Scan Target Domain</label>
                 <div class="input-wrapper">
                     <i class="fa-solid fa-globe"></i>
-                    <input type="text" id="target-url" placeholder="e.g. app.lokalise.com" value="app.lokalise.com">
+                    <input type="text" id="target-url" placeholder="e.g. clickup.com" value="">
                 </div>
             </div>
 
             <div class="input-group">
-                <label for="engine-select">Cognitive AI Engine</label>
-                <div class="select-wrapper">
-                    <select id="engine-select">
-                        <option value="groq">Groq / Llama 3.3 (Zero-Rate-Limit)</option>
-                        <option value="gemini">Gemini / Pro (Google Vertex)</option>
-                    </select>
+                <label>Cognitive AI Engine</label>
+                <div style="background: rgba(31, 41, 55, 0.4); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; color: #38BDF8;">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Groq / Llama 3.3 (Active)</span>
                 </div>
+                <input type="hidden" id="engine-select" value="groq">
             </div>
 
             <button class="btn-launch" id="btn-scan" onclick="triggerScan()">
@@ -573,7 +572,7 @@
             </div>
         </div>
 
-        <!-- Workspace -->
+        <!-- Right Workspace (splitscreen markdown & iframe canvas) -->
         <div class="workspace">
             <div class="critique-section">
                 <div class="panel-title">
@@ -627,6 +626,7 @@
 
         function refreshCanvas() {
             const frame = document.getElementById("canvas-frame");
+            // Cache busting param to reload fresh scan results
             frame.src = "/sandbox?t=" + new Date().getTime();
         }
 
@@ -642,6 +642,7 @@
                 return;
             }
 
+            // UI Loading state
             btnScan.disabled = true;
             loadingScreen.style.display = "flex";
             document.getElementById("terminal-logs").innerHTML = ""; // Clear logs
@@ -649,10 +650,12 @@
             addLog(`Initializing scan agent on: <strong>${urlInput}</strong>`, "info");
             addLog(`Using AI cognitive engine: <strong>${engineSelect.toUpperCase()}</strong>`, "info");
             
+            // Phase 1 logs
             loadingMessage.innerText = `Crawling ${urlInput} network records...`;
             addLog(`Scraper thread spawned...`, "info");
             addLog(`GET request sent to: https://${urlInput}`, "info");
 
+            // Mock log sequences to keep UI dynamic
             const mockLogs = [
                 { text: "Bypassing certificate validations... [SSL: CERTIFICATE_VERIFY_OK]", delay: 1000, type: "info" },
                 { text: "Retrieving response header payload...", delay: 2000, type: "info" },
@@ -665,7 +668,7 @@
 
             mockLogs.forEach(log => {
                 setTimeout(() => {
-                    if (btnScan.disabled) {
+                    if (btnScan.disabled) { // Only log if we are still scanning
                         addLog(log.text, log.type);
                         loadingMessage.innerText = log.text.replace("...", "");
                     }
@@ -690,14 +693,17 @@
                     if (data.status === "success") {
                         addLog(`Web Scout compilation completed successfully!`, "success");
                         
+                        // Populate quick metrics
                         document.getElementById("stat-cms").innerText = data.details.cms;
                         document.getElementById("stat-server").innerText = data.details.server;
                         document.getElementById("stat-hosting").innerText = data.details.hosting;
                         document.getElementById("stat-lcp").innerText = data.details.page_size;
                         document.getElementById("stat-ttfb").innerText = data.details.ttfb;
                         
+                        // Render Markdown critique
                         document.getElementById("critique-container").innerHTML = marked.parse(data.critique);
                         
+                        // Reload dynamic canvas sandbox
                         refreshCanvas();
                     } else if (data.status === "rate_limited") {
                         addLog(`Rate Limit Triggered: ${data.message}`, "error");
