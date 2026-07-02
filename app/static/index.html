@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scout Control Center</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked.js Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0B0F19;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #6366F1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --secondary: #8B5CF6;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --accent-green: #10B981;
+            --accent-red: #EF4444;
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            background: rgba(11, 15, 25, 0.5);
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo i {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: border-box;
+            -webkit-text-fill-color: var(--text-main);
+            padding: 8px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            flex-grow: 1;
+            height: calc(100vh - 81px);
+        }
+
+        /* Sidebar Console Control Panel */
+        .console-panel {
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+            backdrop-filter: blur(8px);
+            background: rgba(17, 24, 39, 0.4);
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            width: 100%;
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 12px 12px 38px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .select-wrapper::after {
+            content: "\f0d7";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .btn-launch {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 14px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-launch:active {
+            transform: translateY(1px);
+        }
+
+        .btn-launch:disabled {
+            background: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Cinematic Terminal Log Console */
+        .terminal-card {
+            background: rgba(10, 10, 15, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            height: 180px;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .terminal-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #FF5F56; }
+        .dot-yellow { background-color: #FFBD2E; }
+        .dot-green { background-color: #27C93F; }
+
+        .terminal-body {
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: #38BDF8;
+        }
+
+        .log-line {
+            line-height: 1.4;
+            word-break: break-all;
+        }
+
+        .log-line.success { color: var(--accent-green); }
+        .log-line.error { color: var(--accent-red); }
+        .log-line.info { color: var(--text-muted); }
+
+        /* Stats Panel */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: rgba(31, 41, 55, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-all;
+        }
+
+        /* Main Workspace Split View */
+        .workspace {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            height: 100%;
+        }
+
+        .critique-section {
+            border-right: 1px solid var(--border-color);
+            padding: 2rem;
+            overflow-y: auto;
+            background: rgba(17, 24, 39, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .markdown-body h3, .markdown-body h4 {
+            color: var(--primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .markdown-body p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+        }
+
+        .markdown-body ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-body li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-body code {
+            font-family: var(--font-mono);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .canvas-section {
+            display: flex;
+            flex-direction: column;
+            background: #0D111A;
+            position: relative;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(17, 24, 39, 0.5);
+        }
+
+        .canvas-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .canvas-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .canvas-iframe {
+            flex-grow: 1;
+            width: 100%;
+            border: none;
+            background-color: #0d1117;
+        }
+
+        /* Loading spinner overlays */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-left-color: var(--primary);
+            border-right-color: var(--secondary);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pulse-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            animation: pulse-opacity 1.5s infinite;
+        }
+
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-compass-drafting"></i>
+            <span>Web Scout Control Center</span>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span>Local Engine Operational</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Sidebar Panel -->
+        <div class="console-panel">
+            <div class="input-group">
+                <label for="target-url">Scan Target Domain</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-globe"></i>
+                    <input type="text" id="target-url" placeholder="e.g. app.lokalise.com" value="app.lokalise.com">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="engine-select">Cognitive AI Engine</label>
+                <div class="select-wrapper">
+                    <select id="engine-select">
+                        <option value="groq">Groq / Llama 3.3 (Zero-Rate-Limit)</option>
+                        <option value="gemini">Gemini / Pro (Google Vertex)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-launch" id="btn-scan" onclick="triggerScan()">
+                <i class="fa-solid fa-rocket"></i> Launch Architecture Scout
+            </button>
+
+            <!-- Diagnostic log terminal -->
+            <div style="display:flex; flex-direction:column; gap:0.5rem; flex-grow:1;">
+                <div class="panel-title">
+                    <i class="fa-solid fa-terminal"></i> Diagnostic Shell Logs
+                </div>
+                <div class="terminal-card">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <span>sh - scout_agent.sh</span>
+                    </div>
+                    <div class="terminal-body" id="terminal-logs">
+                        <div class="log-line info">Scout Console Initialized. Ready for scan commands...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostics Metrics Cards -->
+            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <div class="panel-title">
+                    <i class="fa-solid fa-microchip"></i> System Core Metrics
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">CMS / Tech</span>
+                        <span class="stat-value" id="stat-cms">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Web Server</span>
+                        <span class="stat-value" id="stat-server">-</span>
+                    </div>
+                    <div class="stat-card" style="grid-column: span 2;">
+                        <span class="stat-label">Hosting ISP</span>
+                        <span class="stat-value" id="stat-hosting">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">LCP Weight</span>
+                        <span class="stat-value" id="stat-lcp">-</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">TTFB Latency</span>
+                        <span class="stat-value" id="stat-ttfb">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workspace -->
+        <div class="workspace">
+            <div class="critique-section">
+                <div class="panel-title">
+                    <i class="fa-solid fa-clipboard-check"></i> System Architecture Audit
+                </div>
+                <div class="markdown-body" id="critique-container">
+                    <p style="color: var(--text-muted);">Launch a scout scan on a target domain to generate a systems critique report...</p>
+                </div>
+            </div>
+
+            <div class="canvas-section">
+                <div class="canvas-header">
+                    <div class="canvas-title">
+                        <i class="fa-solid fa-diagram-project" style="color: var(--primary);"></i>
+                        Interactive Architecture Sandbox
+                    </div>
+                    <div class="canvas-actions">
+                        <button class="btn-action" onclick="refreshCanvas()">
+                            <i class="fa-solid fa-arrows-rotate"></i> Refresh Canvas
+                        </button>
+                        <a id="btn-popout" href="/sandbox" target="_blank" class="btn-action" style="text-decoration:none;">
+                            <i class="fa-solid fa-expand"></i> Popout Canvas
+                        </a>
+                    </div>
+                </div>
+                <iframe id="canvas-frame" class="canvas-iframe" src="/sandbox"></iframe>
+
+                <!-- Loading screen overlay -->
+                <div class="loading-overlay" id="loading-screen">
+                    <div class="spinner"></div>
+                    <div class="pulse-text" id="loading-message">Crawling website structures...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Setup initial iframe view
+        refreshCanvas();
+
+        function addLog(text, type = "") {
+            const container = document.getElementById("terminal-logs");
+            const line = document.createElement("div");
+            line.className = `log-line ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            line.innerHTML = `[${timestamp}] ${text}`;
+            container.appendChild(line);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function refreshCanvas() {
+            const frame = document.getElementById("canvas-frame");
+            frame.src = "/sandbox?t=" + new Date().getTime();
+        }
+
+        async function triggerScan() {
+            const urlInput = document.getElementById("target-url").value.trim();
+            const engineSelect = document.getElementById("engine-select").value;
+            const btnScan = document.getElementById("btn-scan");
+            const loadingScreen = document.getElementById("loading-screen");
+            const loadingMessage = document.getElementById("loading-message");
+            
+            if (!urlInput) {
+                alert("Please enter a target URL.");
+                return;
+            }
+
+            btnScan.disabled = true;
+            loadingScreen.style.display = "flex";
+            document.getElementById("terminal-logs").innerHTML = ""; // Clear logs
+            
+            addLog(`Initializing scan agent on: <strong>${urlInput}</strong>`, "info");
+            addLog(`Using AI cognitive engine: <strong>${engineSelect.toUpperCase()}</strong>`, "info");
+            
+            loadingMessage.innerText = `Crawling ${urlInput} network records...`;
+            addLog(`Scraper thread spawned...`, "info");
+            addLog(`GET request sent to: https://${urlInput}`, "info");
+
+            const mockLogs = [
+                { text: "Bypassing certificate validations... [SSL: CERTIFICATE_VERIFY_OK]", delay: 1000, type: "info" },
+                { text: "Retrieving response header payload...", delay: 2000, type: "info" },
+                { text: "Querying local SQLite signatures database cache...", delay: 2800, type: "info" },
+                { text: "Resolving server IP routing backbone...", delay: 3500, type: "info" },
+                { text: "Querying host ISP geolocation database...", delay: 4200, type: "info" },
+                { text: "Compiling system architecture canvas diagram...", delay: 5000, type: "info" },
+                { text: "Generating LLM systems critique audit...", delay: 5800, type: "info" }
+            ];
+
+            mockLogs.forEach(log => {
+                setTimeout(() => {
+                    if (btnScan.disabled) {
+                        addLog(log.text, log.type);
+                        loadingMessage.innerText = log.text.replace("...", "");
+                    }
+                }, log.delay);
+            });
+
+            try {
+                const response = await fetch("/api/scan", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        url: urlInput,
+                        engine: engineSelect
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.status === "success") {
+                        addLog(`Web Scout compilation completed successfully!`, "success");
+                        
+                        document.getElementById("stat-cms").innerText = data.details.cms;
+                        document.getElementById("stat-server").innerText = data.details.server;
+                        document.getElementById("stat-hosting").innerText = data.details.hosting;
+                        document.getElementById("stat-lcp").innerText = data.details.page_size;
+                        document.getElementById("stat-ttfb").innerText = data.details.ttfb;
+                        
+                        document.getElementById("critique-container").innerHTML = marked.parse(data.critique);
+                        
+                        refreshCanvas();
+                    } else if (data.status === "rate_limited") {
+                        addLog(`Rate Limit Triggered: ${data.message}`, "error");
+                        document.getElementById("critique-container").innerHTML = marked.parse(data.critique);
+                    }
+                } else {
+                    addLog(`Error returned from backend service: ${data.detail}`, "error");
+                    document.getElementById("critique-container").innerHTML = `<p style="color:var(--accent-red);">Scan Error: ${data.detail}</p>`;
+                }
+            } catch (err) {
+                addLog(`Network connectivity error occurred: ${err.message}`, "error");
+                document.getElementById("critique-container").innerHTML = `<p style="color:var(--accent-red);">Connection Error: ${err.message}</p>`;
+            } finally {
+                btnScan.disabled = false;
+                loadingScreen.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

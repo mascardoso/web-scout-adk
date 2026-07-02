@@ -1,0 +1,28 @@
+# Secrets and Keys
+.env
+
+# Python Virtual Environment and Caching
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local databases and caches
+app/signatures.db
+.google-agents-cli/
+
+# Log files
+*.log
+run_server.log
+
+# Evaluation Outputs and Trace Artifacts
+artifacts/grade_results/
+artifacts/traces/
+artifacts/groq_eval_report.json
+
+# Local output HTML files (generated dynamically)
+architecture_sandbox.html
