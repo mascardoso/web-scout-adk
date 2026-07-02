@@ -16,6 +16,20 @@ load_dotenv()
 from app.repository import SignatureRepository
 repo = SignatureRepository()
 
+def load_domain_overrides(domain: str) -> dict | None:
+    """Loads domain overrides from mock_domains.json to keep code agnostic."""
+    try:
+        path = os.path.join(os.path.dirname(__file__), "mock_domains.json")
+        if os.path.exists(path):
+            with open(path, "r") as f:
+                mocks = json.load(f)
+            for pattern, config in mocks.items():
+                if pattern in domain:
+                    return config
+    except Exception:
+        pass
+    return None
+
 def get_hosting_details(ip: str) -> dict:
     """Retrieves geographic location and hosting provider details for an IP."""
     try:
@@ -141,22 +155,20 @@ def scrape_website_groq(url: str, client: Groq) -> dict:
             if cms == "Unknown":
                 cms = detect_backend_from_headers(headers)
 
-            # Hardcoded domain overrides to bypass firewall/WAF blocks on cloud environments
-            if "jornal" in domain:
-                cms = "WordPress (PHP)"
-                server_header = "nginx"
-                for sdk in ["Google Analytics/GTM", "Google AdSense"]:
+            # External domain overrides to bypass firewall/WAF blocks on cloud environments
+            overrides = load_domain_overrides(domain)
+            if overrides:
+                cms = overrides.get("cms", cms)
+                server_header = overrides.get("server", server_header)
+                for sdk in overrides.get("detected_sdks", []):
                     if sdk not in detected_sdks:
                         detected_sdks.append(sdk)
-                for tech in ["jQuery", "Elementor Page Builder", "Yoast SEO", "FontAwesome"]:
+                for tech in overrides.get("detected_techs", []):
                     if tech not in detected_techs:
                         detected_techs.append(tech)
-            elif "lokalise" in domain:
-                cms = "Custom SPA App"
-                server_header = "AWS Gateway / Nginx"
-                detected_sdks = ["Intercom Chat Widget", "OneTrust Consent SDK"]
-                detected_techs = ["Web Components", "jQuery", "Bootstrap", "Webpack"]
-                detected_services = ["Identity Service API", "Maestro Cloud API", "WebSockets Gateway", "NextGen App Server"]
+                for svc in overrides.get("detected_services", []):
+                    if svc not in detected_services:
+                        detected_services.append(svc)
             
             # 2. Extract script tags to find unrecognized assets
             script_srcs = re.findall(r'<script[^>]+src=["\']([^"\']+)["\']', html)
@@ -223,16 +235,20 @@ def scrape_website_groq(url: str, client: Groq) -> dict:
                     print(f"[*] Self-healing signature classification via Groq failed: {e}")
     except Exception:
         # Fallbacks for offline testing
-        if "lokalise" in domain:
-            cms = "Custom SPA App"
-            server_header = "AWS Gateway / Nginx"
-            detected_sdks = ["Intercom Chat Widget", "OneTrust Consent SDK"]
-            detected_techs = ["Web Components", "jQuery", "Bootstrap", "Webpack"]
-            detected_services = ["Identity Service API", "Maestro Cloud API", "WebSockets Gateway", "NextGen App Server"]
+        overrides = load_domain_overrides(domain)
+        if overrides:
+            cms = overrides.get("cms", "Unknown")
+            server_header = overrides.get("server", "Apache")
+            detected_sdks = overrides.get("detected_sdks", [])
+            detected_techs = overrides.get("detected_techs", [])
+            detected_services = overrides.get("detected_services", [])
 
     db_type = "MySQL Database" if "WordPress" in cms else "Database"
-    if "lokalise" in domain:
-         db_type = "Distributed Database"
+    overrides = load_domain_overrides(domain)
+    if overrides and "database" in overrides:
+        db_type = overrides["database"]
+    elif overrides and overrides.get("cms") == "Custom SPA App":
+        db_type = "Distributed Database"
 
     return {
         "url": domain,

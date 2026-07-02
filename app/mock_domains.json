@@ -1,0 +1,16 @@
+{
+  "jornal": {
+    "cms": "WordPress (PHP)",
+    "server": "nginx",
+    "detected_sdks": ["Google Analytics/GTM", "Google AdSense"],
+    "detected_techs": ["jQuery", "Elementor Page Builder", "Yoast SEO", "FontAwesome"],
+    "detected_services": []
+  },
+  "lokalise": {
+    "cms": "Custom SPA App",
+    "server": "AWS Gateway / Nginx",
+    "detected_sdks": ["Intercom Chat Widget", "OneTrust Consent SDK"],
+    "detected_techs": ["Web Components", "jQuery", "Bootstrap", "Webpack"],
+    "detected_services": ["Identity Service API", "Maestro Cloud API", "WebSockets Gateway", "NextGen App Server"]
+  }
+}
