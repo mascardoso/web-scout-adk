@@ -41,6 +41,31 @@ def debug_version():
         }
     return {"exists": False}
 
+@app.get("/api/debug-fetch")
+def debug_fetch(url: str):
+    import urllib.request
+    import ssl
+    if not url.startswith("http"):
+        url = "https://" + url
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        )
+        context = ssl._create_unverified_context()
+        with urllib.request.urlopen(req, timeout=5, context=context) as response:
+            headers = dict(response.info())
+            html = response.read().decode('utf-8', errors='ignore')
+            return {
+                "status": "success",
+                "code": response.getcode(),
+                "headers": headers,
+                "html_preview": html[:1000]
+            }
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+
 @app.get("/")
 def read_root():
     """Serves the main dashboard page. Resets sandbox state on refresh."""
